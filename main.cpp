@@ -79,7 +79,7 @@ If you need to view an example, see: https://bitbucket.org/MatkatMusic/pfmcpptas
 */
 
 #include <iostream>
-void part7()
+/*void part7()
 {
     Numeric ft3(3.0f);
     Numeric dt3(4.0);
@@ -128,7 +128,7 @@ void part7()
     it3.apply(myNumericFreeFunct).apply(myNumericFreeFunct);
     std::cout << "it3 after: " << it3 << std::endl;
     std::cout << "---------------------\n" << std::endl;    
-}
+}*/
 
 /*
 your program should generate the following output EXACTLY.
@@ -258,6 +258,7 @@ Use a service like https://www.diffchecker.com/diff to compare your output.
 #include <iostream>
 #include <cmath>
 #include <functional>
+#include <memory>
 
 struct A {};
 struct HeapA
@@ -276,10 +277,10 @@ struct IntType;
 
 struct FloatType
 {
-    explicit FloatType(float val) : value(new float(val)) {}
-    ~FloatType()
-    {
-        delete value;
+    explicit FloatType(float val) : value(std::make_unique<float>(val)) {}
+    ~FloatType() 
+    { 
+        value.reset(nullptr);
     }
 
     FloatType& operator+=( float rhs );
@@ -298,16 +299,16 @@ struct FloatType
     FloatType& apply(void(*)(float&));
 
 private:
-    float* value = nullptr;
+    std::unique_ptr<float> value;
     FloatType& powInternal(const float f);
 };
 
 struct DoubleType
 {
-    explicit DoubleType(double val) : value(new double(val)) {}
+    explicit DoubleType(double val) : value(std::make_unique<double>(val)) {}
     ~DoubleType()
     {
-        delete value;
+        value.reset(nullptr);
     }
 
     DoubleType& operator+=( double rhs );
@@ -326,17 +327,17 @@ struct DoubleType
     DoubleType& apply(void(*)(double&));
 
 private:
-    double* value = nullptr;
+    std::unique_ptr<double> value;
     DoubleType& powInternal(const double d);
 
 };
 
 struct IntType
 {
-    explicit IntType(int val) : value(new int(val)) {}
+    explicit IntType(int val) : value(std::make_unique<int>(val)) {}
     ~IntType()
     {
-        delete value;
+        value.reset(nullptr);
     }
 
     IntType& operator+=( int rhs );
@@ -353,7 +354,7 @@ struct IntType
     IntType& apply(void(*)(int&));
 
 private:
-    int* value = nullptr;
+    std::unique_ptr<int> value;
     IntType& powInternal(const int i);
 };
 
@@ -754,7 +755,7 @@ void myIntFreeFunct(int& i)
     i += 5;
 }
 
-void part6()
+/*void part6()
 {
     FloatType ft3(3.0f);
     DoubleType dt3(4.0);
@@ -801,7 +802,7 @@ void part6()
     it3.apply(myIntFreeFunct);
     std::cout << "it3 after: " << it3 << std::endl;
     std::cout << "---------------------\n" << std::endl;    
-}
+}*/
 
 int main()
 {   
@@ -883,7 +884,7 @@ int main()
 
     part3();
     part4();
-    part6();
+    //part6();
     
     std::cout << "good to go!\n";
 
