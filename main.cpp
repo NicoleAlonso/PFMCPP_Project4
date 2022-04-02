@@ -275,6 +275,77 @@ struct HeapA
 struct DoubleType;
 struct IntType;
 
+template<typename T>
+struct Numeric
+{
+    using Type = T;
+    explicit Numeric(Type val) : value(std::make_unique<Type>(val)) {}
+    ~Numeric()
+    {
+        value.reset(nullptr);
+    }
+
+    Numeric& operator+=( Type rhs )
+    {
+        *value += rhs; 
+        return *this;
+    }
+    Numeric& operator-=( Type rhs )
+    {
+        *value -= rhs; 
+        return *this;
+    }
+    Numeric& operator*=( Type rhs )
+    {
+        *value *= rhs; 
+        return *this;
+    }
+    Numeric& operator/=( Type rhs )
+    {
+        if(rhs == 0)
+        std::cout << "warning: floating point division by zero!\n";
+    
+        *value /= rhs;
+        return *this;
+    }
+
+    operator Type() const { return *value; }
+
+    Numeric& pow(Type t); 
+    Numeric& pow(const Type& t)
+    {
+        return powInternal(t);
+    }
+
+    Numeric& apply(std::function<Numeric&(Type&)> func)
+    {
+        if (func) 
+        {    
+            return func(*value);
+        }
+    
+        return *this;
+    }
+
+    Numeric& apply(void(*ptrFunc)(Type&))
+    {
+        if(ptrFunc)
+        {
+            ptrFunc(*value);
+        }
+    
+        return *this;
+    }
+
+private:
+    std::unique_ptr<Type> value;
+    Numeric& powInternal(const Type t)
+    {
+        *value = static_cast<Type>(std::pow( *value, t ));
+        return *this;
+    }
+};
+
 struct FloatType
 {
     explicit FloatType(float val) : value(std::make_unique<float>(val)) {}
