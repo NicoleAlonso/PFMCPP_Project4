@@ -384,16 +384,6 @@ struct Point
        return multiply(static_cast<float>(n));
     }
 
-    Point& multiply(const Numeric<int>& it)
-    {
-       return multiply(static_cast<float>(it));
-    }
-
-    Point& multiply(const Numeric<double>& dt)
-    {
-       return multiply(static_cast<float>(dt));
-    }
-
     void toString()
     {
         std::cout << "Point { x: " << x << ", y: " << y << " }" << std::endl;
