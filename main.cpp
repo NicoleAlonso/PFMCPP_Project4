@@ -241,9 +241,7 @@ private:
 struct Point
 {
     template<typename T>
-    Point(T m_x, T m_y) : x(static_cast<float>(m_x)), y(static_cast<float>(m_y)) {}
-    template<typename TRef>
-    Point(TRef& m_x, TRef& m_y) : Point(m_x, m_y) {}
+    Point(const T& m_x, const T& m_y) : x(static_cast<float>(m_x)), y(static_cast<float>(m_y)) {}
 
     Point& multiply(float m)
     {
