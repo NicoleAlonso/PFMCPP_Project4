@@ -13,14 +13,6 @@ Create a branch named Part9
  2) move these macros after the JUCE_LEAK_DETECTOR macro :
  */
 
-#define JUCE_DECLARE_NON_COPYABLE(className) \
-            className (const className&) = delete;\
-            className& operator= (const className&) = delete;
-
-#define JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(className) \
-            JUCE_DECLARE_NON_COPYABLE(className) \
-            JUCE_LEAK_DETECTOR(className)
-
 /*
  3) add JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Temporary) to the end of the  Temporary<> struct
  
@@ -75,40 +67,8 @@ Use a service like https://www.diffchecker.com/diff to compare your output.
 #include<iostream>
 #include<cmath>
 #include <functional>
+#include "LeakedObjectDetector.h"
 
-template<typename NumericType>
-struct Temporary
-{
-    Temporary(NumericType t) : v(t)
-    {
-        std::cout << "I'm a Temporary<" << typeid(v).name() << "> object, #"
-                  << counter++ << std::endl;
-    }
-
-    operator NumericType() const 
-    { 
-        return v;
-    }
-    operator NumericType&() 
-    {
-       return v;
-    }
-private:
-    static int counter;
-    NumericType v;
-};
-
-
-template<typename Type>
-int Temporary<Type>::counter = 0;
-
-
-
-#include <iostream>
-#include <cmath>
-#include <functional>
-#include <memory>
-#include <typeinfo>
 
 struct A {};
 struct HeapA
@@ -139,6 +99,8 @@ struct Temporary
 private:
     static int counter;
     NumericType v;
+
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Temporary)
 };
 
 template<typename NumericType>
@@ -230,6 +192,8 @@ private:
         *value = static_cast<Type>(std::pow( *value, t ));
         return *this;
     }
+
+JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Numeric)
 };
 //----------------------------------------------
 
