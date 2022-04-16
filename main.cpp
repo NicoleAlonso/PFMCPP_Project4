@@ -67,6 +67,7 @@ Use a service like https://www.diffchecker.com/diff to compare your output.
 #include<iostream>
 #include<cmath>
 #include <functional>
+#include <utility>
 #include "LeakedObjectDetector.h"
 
 
@@ -90,10 +91,16 @@ struct Temporary
         std::cout << "I'm a Temporary<" << typeid(v).name() << "> object, #"
                   << counter++ << std::endl;
     }
-    /*
-     revise these conversion functions to read/write to 'v' here
-     hint: what qualifier do read-only functions usually have?
-     */
+
+    Temporary(Temporary&& other) : v(std::move(other.v)) {} // move ctor
+    
+    Temporary& operator=(Temporary&& other) //move assignment
+    {
+        v = std::move(other.v);
+        return *this;
+    }
+    ~Temporary() {}
+    
     operator NumericType() const { return v; } //read-only
     operator NumericType&() { return v; }
 private:
@@ -110,7 +117,17 @@ template<typename T>
 struct Numeric
 {
     using Type = Temporary<T>;
-    explicit Numeric(Type val) : value(std::make_unique<Type>(val)) {}
+    Numeric(Type&& val) : value(std::make_unique<Type>(std::forward<Type>(val))) {}
+    //Numeric(const Numeric& other) {} //copy ctor
+    //Numeric& operator=(const Numeric& other) { return *this;} //copy assignment
+    Numeric(Numeric&& other) : value(std::move(other.value)) {} // move ctor
+    
+    Numeric& operator=(Numeric&& other) //move assignment
+    {
+        value = std::move(other.value);
+        return *this;
+    }
+    ~Numeric() {}
 
     template<typename ParamType>
     Numeric& operator=( const ParamType& rhs )
