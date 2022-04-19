@@ -117,9 +117,7 @@ template<typename T>
 struct Numeric
 {
     using Type = Temporary<T>;
-    Numeric(Type&& val) : value(std::make_unique<Type>(std::forward<Type>(val))) {}
-    //Numeric(const Numeric& other) {} //copy ctor
-    //Numeric& operator=(const Numeric& other) { return *this;} //copy assignment
+    Numeric(T&& val) : value(std::make_unique<Type>(std::forward<T>(val))) {}
     Numeric(Numeric&& other) : value(std::move(other.value)) {} // move ctor
     
     Numeric& operator=(Numeric&& other) //move assignment
